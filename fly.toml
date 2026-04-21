@@ -1,15 +1,24 @@
-# fly.toml app configuration file generated for remix-template on 2025-11-23T20:35:17-05:00
+# fly.toml app configuration file
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'remix-template'
+app = 'react-router-template'
 primary_region = 'yyz'
 
 [build]
 
 [deploy]
   release_command = 'npx prisma migrate deploy'
+
+[env]
+  NODE_ENV = 'production'
+  PORT = '3000'
+  # Redis wiring exists as template code but isn't connected.
+  # REDIS_HOST and REDIS_PASSWORD are set as secrets.
+  REDIS_PORT = '6379'
+  REDIS_USERNAME = 'default'
+  REDIS_QUEUE = 'template'
 
 [http_service]
   internal_port = 3000

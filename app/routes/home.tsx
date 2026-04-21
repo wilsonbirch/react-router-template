@@ -1,31 +1,24 @@
-import { useLoaderData, useNavigate } from '@remix-run/react'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import { homeLoader } from '~/loader/home.server'
 import { useAuth } from '~/providers'
 
-import type {
-    LoaderFunction,
-    LoaderFunctionArgs,
-    MetaFunction,
-} from '@remix-run/node'
-import type { LoaderData } from '~/loader/home.server'
+import type { Route } from './+types/home'
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
     return [
         { title: 'remix-template | Home' },
         { name: 'home', content: 'Home page for remix-template application' },
     ]
 }
 
-export const loader: LoaderFunction = async ({
-    request,
-}: LoaderFunctionArgs) => {
+export async function loader({ request }: Route.LoaderArgs) {
     return homeLoader(request)
 }
 
-export default function Home() {
+export default function Home({ loaderData }: Route.ComponentProps) {
     const navigate = useNavigate()
-    const { account, nextUrl } = useLoaderData<LoaderData>()
+    const { account, nextUrl } = loaderData
     const { account: authAccount, setAccount } = useAuth()
 
     useEffect(() => {

@@ -1,15 +1,12 @@
-import { authenticator } from '~/auth/auth.server'
+import { redirectIfAuthenticated } from '~/auth/auth.server'
 
 export type LoaderData = {
     error: boolean
 }
 
 export const authSignupLoader = async (request: Request) => {
+    await redirectIfAuthenticated(request, '/home')
     const url = new URL(request.url)
     const error = url.searchParams.get('error')
-    await authenticator.isAuthenticated(request, {
-        successRedirect: '/home',
-    })
-
-    return { error: error === 'true' ? true : false }
+    return { error: error === 'true' }
 }

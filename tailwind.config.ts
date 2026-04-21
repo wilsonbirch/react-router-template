@@ -16,7 +16,7 @@ export default {
             themes: {
                 dark: {
                     colors: {
-                        background: '#333333',
+                        background: '#0a0a0a',
                         foreground: '#ffffff',
                         default: {
                             // 50: '#3B096C',
@@ -68,16 +68,10 @@ export default {
                         background: '#f2f2f2',
                         foreground: '#1a1a1a',
                         default: {
-                            // 50: '#3B096C',
-                            // 100: '#520F83',
-                            // 200: '#7318A2',
-                            // 300: '#9823C2',
-                            // 400: '#c031e2',
-                            // 500: '#DD62ED',
-                            // 600: '#F182F6',
+                            100: '#ebebeb',
+                            200: '#d4d4d4',
+                            300: '#b8b8b8',
                             700: '#1a1a1a',
-                            // 800: '#FDD5F9',
-                            // 900: '#FEECFE',
                             DEFAULT: '#0066ff',
                             // foreground: '#1a1a1a',
                         },

@@ -1,4 +1,5 @@
 build
+.react-router/
 
 # prisma (for template only, not when reused)
 prisma/migrations

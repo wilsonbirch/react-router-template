@@ -1,5 +1,5 @@
 import { addToast, HeroUIProvider, ToastProvider } from '@heroui/react'
-import { useNavigate } from '@remix-run/react'
+import { useNavigate } from 'react-router'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 

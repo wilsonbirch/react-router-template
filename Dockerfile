@@ -4,9 +4,9 @@
 ARG NODE_VERSION=20.19.4
 FROM node:${NODE_VERSION}-slim AS base
 
-LABEL fly_launch_runtime="Remix/Prisma"
+LABEL fly_launch_runtime="React Router/Prisma"
 
-# Remix/Prisma app lives here
+# React Router/Prisma app lives here
 WORKDIR /app
 
 # Set production environment

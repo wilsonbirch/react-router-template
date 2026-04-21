@@ -1,7 +1,6 @@
-import { authenticator } from '~/auth/auth.server'
+import { getUser } from '~/auth/auth.server'
 
 export const indexLoader = async (request: Request) => {
-    const account = await authenticator.isAuthenticated(request)
-
+    const account = await getUser(request)
     return { account }
 }

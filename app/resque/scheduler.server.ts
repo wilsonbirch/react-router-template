@@ -1,10 +1,11 @@
 import { Queue, Scheduler } from 'node-resque'
 import * as schedule from 'node-schedule'
 import { jobs } from '~/resque/jobs.server'
+import { logger } from '~/lib/logger.server'
 import { connectionDetails } from '~/resque/main.server'
 import { queueTitles } from '~/resque/worker.server'
 
-const fileName = 'resque/scheduler.server.ts'
+const fileName = 'resque/scheduler.server'
 export async function nodeScheduler() {
     // ////////////////////////
     //        SCHEDULER      //
@@ -15,31 +16,35 @@ export async function nodeScheduler() {
     scheduler.start()
 
     scheduler.on('start', () => {
-        console.log('scheduler started')
+        logger.info(fileName, 'scheduler started')
     })
     scheduler.on('end', () => {
-        console.log('scheduler ended')
+        logger.info(fileName, 'scheduler ended')
     })
     scheduler.on('poll', () => {
-        console.log('scheduler polling')
+        logger.debug(fileName, 'scheduler polling')
     })
     scheduler.on('leader', () => {
-        console.log('scheduler became leader')
+        logger.info(fileName, 'scheduler became leader')
     })
     scheduler.on('error', (error) => {
-        console.log(`scheduler error >> ${error}`)
+        logger.error(fileName, `scheduler error error:${error}`)
     })
     scheduler.on('cleanStuckWorker', (workerName, errorPayload, delta) => {
-        console.log(
-            `failing ${workerName} (stuck for ${delta}s) and failing job ${errorPayload}`
+        logger.warn(
+            fileName,
+            `stuck worker worker:${workerName} stuckSec:${delta} payload:${JSON.stringify(
+                errorPayload
+            )}`
         )
     })
     scheduler.on('workingTimestamp', (timestamp) => {
-        console.log(`scheduler working timestamp ${timestamp}`)
+        logger.debug(fileName, `working timestamp:${timestamp}`)
     })
     scheduler.on('transferredJob', (timestamp, job) => {
-        console.log(
-            `scheduler enquing job ${timestamp} >> ${JSON.stringify(job)}`
+        logger.info(
+            fileName,
+            `transferred timestamp:${timestamp} job:${JSON.stringify(job)}`
         )
     })
 
@@ -49,7 +54,7 @@ export async function nodeScheduler() {
 
     const queue = new Queue({ connection: connectionDetails }, jobs)
     queue.on('error', function (error) {
-        console.log(`resque:queue error: ${error}`)
+        logger.error(fileName, `queue error error:${error}`)
     })
     await queue.connect()
 
@@ -83,14 +88,17 @@ export async function nodeScheduler() {
 
     schedule.scheduleJob(everySunday, async () => {
         if (scheduler.leader) {
-            console.log('>>> enquing {} job')
+            logger.info(
+                fileName,
+                `enqueue scheduled queue:${queueTitles.schedule.queue}`
+            )
             await queue.enqueue(queueTitles.schedule.queue, '{}', [])
         }
     })
 
     const shutdown = async () => {
         await scheduler.end()
-        console.log('scheduler shutdown ..')
+        logger.info(fileName, 'scheduler shutdown')
         process.exit()
     }
 

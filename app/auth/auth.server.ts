@@ -3,6 +3,7 @@ import { redirect } from 'react-router'
 import { Authenticator } from 'remix-auth'
 import { FormStrategy } from 'remix-auth-form'
 import { db } from '~/lib/db.server'
+import { logger } from '~/lib/logger.server'
 import { parseEmail } from '~/utils/index.server'
 import { sessionStorage } from './sessionStorage.server'
 
@@ -14,6 +15,8 @@ export type AuthAccount = {
 }
 
 const USER_SESSION_KEY = 'user'
+
+const fileName = 'auth/auth.server'
 
 const sessionSecret = process.env.SESSION_SECRET
 
@@ -31,6 +34,7 @@ const loginFormStrategy = new FormStrategy(async ({ form }) => {
         where: { email: email },
     })
     if (!account) {
+        logger.warn(fileName, `login failed email:${email} reason:account_not_found`)
         throw new Error('Incorrect credentials, please try again')
     }
 
@@ -39,8 +43,10 @@ const loginFormStrategy = new FormStrategy(async ({ form }) => {
         account.password as string
     )
     if (!passwordsMatch) {
+        logger.warn(fileName, `login failed email:${email} reason:password_mismatch`)
         throw new Error('Incorrect credentials, please try again')
     }
+    logger.info(fileName, `login success accountId:${account.id} email:${email}`)
     return {
         id: account.id,
         uuid: account.uuid,
@@ -66,16 +72,19 @@ const signUpFormStrategy = new FormStrategy(async ({ form }) => {
     })
 
     if (existingAccount) {
+        logger.warn(fileName, `signup failed email:${email} reason:account_exists`)
         throw new Error('Account with that email already exists, login instead?')
     }
 
     const isEmail = parseEmail(email)
 
     if (isEmail.isErr) {
+        logger.warn(fileName, `signup failed email:${email} reason:invalid_email`)
         throw new Error('Not a valid email, try a different one')
     }
 
     if (password.length <= 7) {
+        logger.warn(fileName, `signup failed email:${email} reason:password_too_short`)
         throw new Error('Password must be 8 characters in length')
     }
 
@@ -89,9 +98,11 @@ const signUpFormStrategy = new FormStrategy(async ({ form }) => {
     })
 
     if (!account) {
+        logger.error(fileName, `signup failed email:${email} reason:account_create_returned_null`)
         throw new Error('Something went wrong creating account')
     }
 
+    logger.info(fileName, `signup success accountId:${account.id} email:${email}`)
     return {
         id: account.id,
         uuid: account.uuid,

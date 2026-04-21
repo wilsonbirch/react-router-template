@@ -3,10 +3,12 @@ import { isbot } from 'isbot'
 import { PassThrough } from 'node:stream'
 import { renderToPipeableStream } from 'react-dom/server'
 import { ServerRouter } from 'react-router'
+import { logger } from '~/lib/logger.server'
 
 import type { EntryContext } from 'react-router'
 
 const ABORT_DELAY = 5000
+const fileName = 'entry.server'
 
 export default async function handleRequest(
     request: Request,
@@ -39,7 +41,12 @@ export default async function handleRequest(
                 },
                 onError(error) {
                     responseStatusCode = 500
-                    console.error(error)
+                    const message =
+                        error instanceof Error ? error.message : String(error)
+                    logger.error(
+                        fileName,
+                        `render error url:${request.url} error:${message}`
+                    )
                 },
             }
         )

@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach } from 'vitest'
 
+process.env.LOG_LEVEL ??= 'ERROR'
 process.env.SESSION_SECRET ??= 'test-session-secret'
 process.env.APP_SECRET ??= 'test-app-secret'
 process.env.REDIS_QUEUE ??= 'test-queue'

@@ -29,7 +29,7 @@ export function Header() {
             <NavbarContent>
                 <NavbarBrand>
                     <Link className="font-bold text-inherit" href="/">
-                        remix-template
+                        react-router-template
                     </Link>
                 </NavbarBrand>
             </NavbarContent>

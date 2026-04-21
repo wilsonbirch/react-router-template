@@ -1,8 +1,9 @@
-html,
-body {
-    @media (prefers-color-scheme: dark) {
-        color-scheme: dark;
-    }
+html.light {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
 }
 
 main {

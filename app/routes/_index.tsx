@@ -4,8 +4,8 @@ import type { Route } from './+types/_index'
 
 export const meta: Route.MetaFunction = () => {
     return [
-        { title: 'remix-template' },
-        { name: 'remix-template', content: 'index route for remix-template' },
+        { title: 'react-router-template' },
+        { name: 'react-router-template', content: 'index route for react-router-template' },
     ]
 }
 

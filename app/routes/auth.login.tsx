@@ -8,10 +8,10 @@ import type { Route } from './+types/auth.login'
 
 export const meta: Route.MetaFunction = () => {
     return [
-        { title: 'remix-template | Login' },
+        { title: 'react-router-template | Login' },
         {
             name: 'auth/login',
-            content: 'Login page for remix-template application',
+            content: 'Login page for react-router-template application',
         },
     ]
 }

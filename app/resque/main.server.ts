@@ -1,5 +1,6 @@
 import { Queue } from 'node-resque'
 import { jobs } from '~/resque/jobs.server'
+import { logger } from '~/lib/logger.server'
 import { queueTitles } from '~/resque/worker.server'
 
 export type ResqueTaskInput = {
@@ -18,7 +19,7 @@ export const connectionDetails = {
     database: 0,
 }
 
-const fileName = 'resque/main.server.ts'
+const fileName = 'resque/main.server'
 
 export async function resqueTask({ job, templateProps }: ResqueTaskInput) {
     const jobDetails = {
@@ -36,21 +37,19 @@ export async function resqueTask({ job, templateProps }: ResqueTaskInput) {
 
     const redisQueue = new Queue({ connection: connectionDetails }, jobs)
 
-    // Add queue event listeners for debugging
     redisQueue.on('error', function (error) {
-        console.log(`resque:queue error: ${error}`)
+        logger.error(fileName, `queue error job:${job} error:${error}`)
     })
     try {
         await redisQueue.connect()
-
-        // Log the enqueue attempt
-        console.log(`Enqueueing job: ${job} to queue: ${queueTitle}`)
-
+        logger.info(fileName, `START enqueue job:${job} queue:${queueTitle}`)
         await redisQueue.enqueue(queueTitle, job, [props])
-
-        console.log(`Successfully enqueued job: ${job}`)
+        logger.info(fileName, `END enqueue job:${job} queue:${queueTitle}`)
     } catch (error) {
-        console.log(`Failed to enqueue job ${job}: ${error}`)
+        logger.error(
+            fileName,
+            `END enqueue job:${job} queue:${queueTitle} error:${error}`
+        )
         throw error
     } finally {
         await redisQueue.end()
@@ -63,11 +62,8 @@ export async function getQueueStatus(queueName: string) {
 
     try {
         await redisQueue.connect()
-
         const queueLength = await redisQueue.length(queueName)
-
-        console.log(`Queue ${queueName} - Pending: ${queueLength}`)
-
+        logger.info(fileName, `queue status queue:${queueName} pending:${queueLength}`)
         return { pending: queueLength }
     } finally {
         await redisQueue.end()

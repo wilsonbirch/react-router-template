@@ -14,6 +14,7 @@ primary_region = 'yyz'
 [env]
   NODE_ENV = 'production'
   PORT = '3000'
+  LOG_LEVEL = 'INFO'
   # Redis wiring exists as template code but isn't connected.
   # REDIS_HOST and REDIS_PASSWORD are set as secrets.
   REDIS_PORT = '6379'

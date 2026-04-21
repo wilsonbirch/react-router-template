@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../app/styles/main.css"],
-  "sourcesContent": ["main {\n\theight: 100vh;\n\twidth: 100vw;\n}\n"],
-  "mappings": ";AAAA;AACC;AACA;;",
-  "names": []
-}

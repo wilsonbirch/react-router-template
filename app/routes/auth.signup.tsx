@@ -1,19 +1,12 @@
 import { addToast, Button, Input } from '@heroui/react'
-import { Form, useActionData } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { Form } from 'react-router'
 import { authSignupAction } from '~/actions/auth.signup.server'
 import { authSignupLoader } from '~/loader/auth.signup.server'
 
-import type {
-    ActionFunction,
-    ActionFunctionArgs,
-    LoaderFunction,
-    LoaderFunctionArgs,
-    MetaFunction,
-} from '@remix-run/node'
-import type { ActionData } from '~/actions/auth.signup.server'
+import type { Route } from './+types/auth.signup'
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
     return [
         { title: 'remix-template | Signup' },
         {
@@ -23,24 +16,17 @@ export const meta: MetaFunction = () => {
     ]
 }
 
-export const loader: LoaderFunction = async ({
-    request,
-}: LoaderFunctionArgs) => {
+export async function loader({ request }: Route.LoaderArgs) {
     return authSignupLoader(request)
 }
 
-export const action: ActionFunction = async ({
-    request,
-}: ActionFunctionArgs) => {
+export async function action({ request }: Route.ActionArgs) {
     return authSignupAction(request)
 }
 
 const inputClass = 'my-2'
 
-export default function Signup() {
-    const actionData = useActionData<ActionData>()
-    // const loaderData = useLoaderData<LoaderData>()
-    // const fetcher = useFetcher<{ message: string; code: number }>()
+export default function Signup({ actionData }: Route.ComponentProps) {
     const [formData, setFormData] = useState<{
         email: string
         password: string
@@ -102,10 +88,11 @@ export default function Signup() {
 
     return (
         <div className="mt-40 mx-auto max-w-80">
-            <h1 className="mx-auto w-fit">Signup for 3DF</h1>
+            <h1 className="mx-auto w-fit">Signup</h1>
             <Form method="post">
                 <Input
                     className={inputClass}
+                    variant="bordered"
                     type="text"
                     name="email"
                     label="Email"
@@ -115,6 +102,7 @@ export default function Signup() {
                 />
                 <Input
                     className={inputClass}
+                    variant="bordered"
                     type={formData.hidePassword ? 'password' : 'text'}
                     label="Password"
                     name="password"
@@ -141,6 +129,7 @@ export default function Signup() {
                 />
                 <Input
                     className={inputClass}
+                    variant="bordered"
                     type={formData.hidePassword ? 'password' : 'text'}
                     label="Confirm Password"
                     name="confirm"

@@ -1,5 +1,5 @@
 import { Spinner } from '@heroui/react'
-import { useNavigation } from '@remix-run/react'
+import { useNavigation } from 'react-router'
 
 interface Props {
     overlay?: boolean

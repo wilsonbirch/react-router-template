@@ -1,5 +1,4 @@
-import { authenticator } from '~/auth/auth.server'
-import { AuthorizationError } from 'remix-auth'
+import { authenticator, commitUserSession } from '~/auth/auth.server'
 
 export type ActionData = {
     message?: string
@@ -8,23 +7,13 @@ export type ActionData = {
 
 export const authLoginAction = async (request: Request) => {
     try {
-        return await authenticator.authenticate('login', request, {
-            successRedirect: '/home',
-            throwOnError: true,
-        })
+        const user = await authenticator.authenticate('login', request)
+        return await commitUserSession(request, user, '/home')
     } catch (exception) {
-        if (exception instanceof Response) {
-            throw exception
+        if (exception instanceof Response) throw exception
+        if (exception instanceof Error) {
+            return { message: exception.message, code: 402 }
         }
-        if (exception instanceof AuthorizationError) {
-            return {
-                message: exception.message,
-                code: 402,
-            }
-        }
-    }
-    return {
-        message: 'Something went wrong',
-        code: 500,
+        return { message: 'Something went wrong', code: 500 }
     }
 }

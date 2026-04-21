@@ -1,15 +1,15 @@
 import { indexLoader } from '~/loader/index.server'
 
-import type { LoaderFunction, MetaFunction } from '@remix-run/node'
+import type { Route } from './+types/_index'
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
     return [
         { title: 'remix-template' },
         { name: 'remix-template', content: 'index route for remix-template' },
     ]
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: Route.LoaderArgs) {
     return indexLoader(request)
 }
 

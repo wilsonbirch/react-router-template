@@ -1,25 +1,12 @@
 import { addToast, Button, Input } from '@heroui/react'
-import {
-    Form,
-    useActionData,
-    useLoaderData,
-    useNavigation,
-} from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { Form, useNavigation } from 'react-router'
 import { authLoginAction } from '~/actions/auth.login.server'
 import { authLoginLoader } from '~/loader/auth.login.server'
 
-import type {
-    ActionFunction,
-    ActionFunctionArgs,
-    LoaderFunction,
-    LoaderFunctionArgs,
-    MetaFunction,
-} from '@remix-run/node'
-import type { LoaderData } from '~/loader/auth.login.server'
-import type { ActionData } from '~/actions/auth.login.server'
+import type { Route } from './+types/auth.login'
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
     return [
         { title: 'remix-template | Login' },
         {
@@ -29,22 +16,20 @@ export const meta: MetaFunction = () => {
     ]
 }
 
-export const loader: LoaderFunction = async ({
-    request,
-}: LoaderFunctionArgs) => {
+export async function loader({ request }: Route.LoaderArgs) {
     return authLoginLoader(request)
 }
 
-export const action: ActionFunction = async ({
-    request,
-}: ActionFunctionArgs) => {
+export async function action({ request }: Route.ActionArgs) {
     return authLoginAction(request)
 }
 
-export default function Login() {
+export default function Login({
+    loaderData,
+    actionData,
+}: Route.ComponentProps) {
     const navigation = useNavigation()
-    const { nextUrl } = useLoaderData<LoaderData>()
-    const actionData = useActionData<ActionData>()
+    const { nextUrl } = loaderData
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -93,6 +78,7 @@ export default function Login() {
             >
                 <Input
                     className={inputClass}
+                    variant="bordered"
                     type="email"
                     name="email"
                     label="Email"
@@ -102,6 +88,7 @@ export default function Login() {
                 />
                 <Input
                     className={inputClass}
+                    variant="bordered"
                     type={formData.hidePassword ? 'password' : 'text'}
                     label="Password"
                     name="password"

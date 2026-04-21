@@ -1,11 +1,9 @@
-import { redirect } from '@remix-run/node'
+import { redirect } from 'react-router'
 import { sessionStorage } from '~/auth/sessionStorage.server'
 
-import type { LoaderFunction, LoaderFunctionArgs } from '@remix-run/node'
+import type { Route } from './+types/auth.logout'
 
-export const loader: LoaderFunction = async ({
-    request,
-}: LoaderFunctionArgs) => {
+export async function loader({ request }: Route.LoaderArgs) {
     const session = await sessionStorage.getSession(
         request.headers.get('Cookie')
     )
@@ -17,4 +15,6 @@ export const loader: LoaderFunction = async ({
     })
 }
 
-export default function Logout() {}
+export default function Logout() {
+    return null
+}

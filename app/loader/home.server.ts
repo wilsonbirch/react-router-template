@@ -1,4 +1,4 @@
-import { authenticator } from '~/auth/auth.server'
+import { requireUser } from '~/auth/auth.server'
 
 import type { AuthAccount } from '~/auth/auth.server'
 
@@ -8,14 +8,8 @@ export type LoaderData = {
 }
 
 export const homeLoader = async (request: Request) => {
+    const account = await requireUser(request, '/auth/login')
     const url = new URL(request.url)
     const nextUrl = url.searchParams.get('nextUrl')
-
-    const account: AuthAccount = await authenticator.isAuthenticated(request, {
-        failureRedirect: '/auth/login',
-    })
-    return {
-        account,
-        nextUrl,
-    }
+    return { account, nextUrl }
 }

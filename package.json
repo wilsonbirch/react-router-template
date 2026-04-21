@@ -5,18 +5,18 @@
     "sideEffects": false,
     "type": "module",
     "scripts": {
-        "build": "remix vite:build",
-        "dev": "remix vite:dev",
-        "start": "remix-serve ./build/server/app.js",
-        "typecheck": "tsc"
+        "build": "react-router build",
+        "dev": "react-router dev",
+        "start": "react-router-serve ./build/server/index.js",
+        "typecheck": "react-router typegen && tsc",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "dependencies": {
-        "@heroui/react": "^2.7.10",
+        "@heroui/react": "2.7.10",
         "@prisma/client": "^6.4.1",
-        "@remix-run/css-bundle": "^2.15.3",
-        "@remix-run/node": "^2.15.3",
-        "@remix-run/react": "^2.15.3",
-        "@remix-run/serve": "^2.15.3",
+        "@react-router/node": "^7.14.1",
+        "@react-router/serve": "^7.14.1",
         "bcryptjs": "^3.0.2",
         "ioredis": "^5.8.2",
         "isbot": "^5.1.23",
@@ -26,15 +26,20 @@
         "postcss-preset-env": "^10.4.0",
         "react": "^18.0.0",
         "react-dom": "^18.3.1",
-        "remix-auth": "^3.7.0",
-        "remix-auth-form": "^1.5.0",
+        "react-router": "^7.14.1",
+        "remix-auth": "^4.0.0",
+        "remix-auth-form": "^3.0.0",
         "remixicon": "^4.6.0",
         "tailwindcss": "^3.4.18",
         "true-myth": "^8.0.1"
     },
     "devDependencies": {
         "@flydotio/dockerfile": "^0.7.10",
-        "@remix-run/dev": "^2.15.3",
+        "@react-router/dev": "^7.14.1",
+        "@react-router/fs-routes": "^7.14.1",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@testing-library/user-event": "^14.6.1",
         "@types/bcryptjs": "^2.4.6",
         "@types/node-schedule": "^2.1.7",
         "@types/react": "^18.3.18",
@@ -42,11 +47,13 @@
         "@typescript-eslint/eslint-plugin": "^8.24.1",
         "@typescript-eslint/parser": "^8.24.1",
         "autoprefixer": "^10.4.22",
+        "jsdom": "^29.0.2",
         "postcss": "^8.5.6",
         "prisma": "^6.4.1",
         "typescript": "^5.7.3",
         "vite": "^5.1.0",
-        "vite-tsconfig-paths": "^5.1.4"
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^4.1.4"
     },
     "engines": {
         "node": ">=20.0.0"

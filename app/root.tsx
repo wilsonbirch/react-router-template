@@ -1,13 +1,4 @@
-import {
-    Links,
-    Meta,
-    Outlet,
-    Scripts,
-    ScrollRestoration,
-    useLoaderData,
-    useRouteError,
-} from '@remix-run/react'
-import { useState } from 'react'
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import {
     ErrorBoundary as ErrorBoundaryComponent,
     Header,
@@ -16,8 +7,7 @@ import {
 import { rootLoader } from '~/loader/root.server'
 import { Providers } from '~/providers'
 
-import type { LoaderFunction } from '@remix-run/node'
-import type { LoaderData } from '~/loader/root.server'
+import type { Route } from './+types/root'
 
 import 'remixicon/fonts/remixicon.css'
 import '~/styles/loading.css'
@@ -36,13 +26,13 @@ export type RootContext = {
     >
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: Route.LoaderArgs) {
     return rootLoader(request)
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 <meta charSet="utf-8" />
                 <meta
@@ -61,13 +51,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
     )
 }
 
-export default function App() {
-    const { account } = useLoaderData<LoaderData>()
-    const [theme, setTheme] = useState('dark')
+export default function App({ loaderData }: Route.ComponentProps) {
+    const { account } = loaderData
 
     return (
         <Providers initialAccount={account}>
-            <main className={`${theme} text-foreground bg-background`}>
+            <main className="min-h-screen text-foreground bg-background">
                 <Header />
                 <div className="container mx-auto md:px-0 px-2">
                     <Outlet />
@@ -78,14 +67,12 @@ export default function App() {
     )
 }
 
-export function ErrorBoundary() {
-    const error = useRouteError()
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     let errorMessage: string = 'An unknown error occurred'
 
     if (error instanceof Error) {
         errorMessage = error.message
     } else if (typeof error === 'object' && error !== null) {
-        // Handle Response objects from Remix
         if ('data' in error && error.data && typeof error.data === 'object') {
             // @ts-ignore
             errorMessage = error.data.message || JSON.stringify(error.data)

@@ -1,4 +1,3 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@heroui/navbar'
 import {
     Avatar,
     Button,
@@ -7,7 +6,12 @@ import {
     DropdownMenu,
     DropdownTrigger,
     Link,
+    Navbar,
+    NavbarBrand,
+    NavbarContent,
+    NavbarItem,
 } from '@heroui/react'
+import { ThemeSwitcher } from './themeSwitcher'
 import { useAuth } from '~/providers'
 
 export type MenuItem = { label: string; key: string; to: any }
@@ -48,6 +52,9 @@ export function Header() {
 				</NavbarItem> */}
             </NavbarContent>
             <NavbarContent as="div" justify="end">
+                <NavbarItem>
+                    <ThemeSwitcher />
+                </NavbarItem>
                 {account ? (
                     <Dropdown placement="bottom-end">
                         <DropdownTrigger>

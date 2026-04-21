@@ -1,23 +1,33 @@
-'use client'
-
+import { Button } from '@heroui/react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
 export function ThemeSwitcher() {
     const [mounted, setMounted] = useState(false)
-    const { theme, setTheme } = useTheme()
+    const { resolvedTheme, setTheme } = useTheme()
 
     useEffect(() => {
         setMounted(true)
     }, [])
 
-    if (!mounted) return null
+    const isDark = mounted && resolvedTheme === 'dark'
 
     return (
-        <div>
-            The current theme is: {theme}
-            <button onClick={() => setTheme('light')}>Light Mode</button>
-            <button onClick={() => setTheme('dark')}>Dark Mode</button>
-        </div>
+        <Button
+            isIconOnly
+            variant="light"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            onPress={() => setTheme(isDark ? 'light' : 'dark')}
+        >
+            {mounted ? (
+                <i
+                    className={`ri-lg ${
+                        isDark ? 'ri-moon-line' : 'ri-sun-line'
+                    }`}
+                />
+            ) : (
+                <i className="ri-lg ri-moon-line opacity-0" />
+            )}
+        </Button>
     )
 }

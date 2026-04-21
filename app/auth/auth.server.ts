@@ -1,5 +1,6 @@
 import { default as bcryptjs } from 'bcryptjs'
-import { Authenticator, AuthorizationError } from 'remix-auth'
+import { redirect } from 'react-router'
+import { Authenticator } from 'remix-auth'
 import { FormStrategy } from 'remix-auth-form'
 import { db } from '~/lib/db.server'
 import { parseEmail } from '~/utils/index.server'
@@ -12,13 +13,15 @@ export type AuthAccount = {
     role: 'ADMIN' | 'USER'
 }
 
+const USER_SESSION_KEY = 'user'
+
 const sessionSecret = process.env.SESSION_SECRET
 
 if (!sessionSecret) {
     throw new Error('SESSION_SECRET must be set')
 }
 
-const authenticator = new Authenticator<any>(sessionStorage)
+const authenticator = new Authenticator<AuthAccount>()
 
 const loginFormStrategy = new FormStrategy(async ({ form }) => {
     const email = form.get('email') as string
@@ -28,8 +31,7 @@ const loginFormStrategy = new FormStrategy(async ({ form }) => {
         where: { email: email },
     })
     if (!account) {
-        // credentials not found
-        throw new AuthorizationError('Incorrect credentials, please try again')
+        throw new Error('Incorrect credentials, please try again')
     }
 
     const passwordsMatch = await bcryptjs.compare(
@@ -37,15 +39,14 @@ const loginFormStrategy = new FormStrategy(async ({ form }) => {
         account.password as string
     )
     if (!passwordsMatch) {
-        // incorrect password
-        throw new AuthorizationError('Incorrect credentials, please try again')
+        throw new Error('Incorrect credentials, please try again')
     }
     return {
         id: account.id,
         uuid: account.uuid,
         email: account.email,
-        role: account.role,
-    } as AuthAccount
+        role: account.role as 'ADMIN' | 'USER',
+    } satisfies AuthAccount
 })
 
 authenticator.use(loginFormStrategy, 'login')
@@ -65,22 +66,17 @@ const signUpFormStrategy = new FormStrategy(async ({ form }) => {
     })
 
     if (existingAccount) {
-        // existing email
-        throw new AuthorizationError(
-            'Account with that email already exists, login instead?'
-        )
+        throw new Error('Account with that email already exists, login instead?')
     }
 
     const isEmail = parseEmail(email)
 
     if (isEmail.isErr) {
-        // not a valid email
-        throw new AuthorizationError('Not a valid email, try a different one')
+        throw new Error('Not a valid email, try a different one')
     }
 
     if (password.length <= 7) {
-        // password length
-        throw new AuthorizationError('Password must be 8 characters in length')
+        throw new Error('Password must be 8 characters in length')
     }
 
     const salt = bcryptjs.genSaltSync(10)
@@ -93,18 +89,56 @@ const signUpFormStrategy = new FormStrategy(async ({ form }) => {
     })
 
     if (!account) {
-        // server error during signup
-        throw new AuthorizationError('Something went wrong creating account')
+        throw new Error('Something went wrong creating account')
     }
 
     return {
         id: account.id,
         uuid: account.uuid,
         email: account.email,
-        role: account.role,
-    } as AuthAccount
+        role: account.role as 'ADMIN' | 'USER',
+    } satisfies AuthAccount
 })
 
 authenticator.use(signUpFormStrategy, 'signup')
+
+export async function getUser(request: Request): Promise<AuthAccount | null> {
+    const session = await sessionStorage.getSession(
+        request.headers.get('Cookie')
+    )
+    const user = session.get(USER_SESSION_KEY)
+    return (user as AuthAccount) ?? null
+}
+
+export async function requireUser(
+    request: Request,
+    failureRedirect = '/auth/login'
+): Promise<AuthAccount> {
+    const user = await getUser(request)
+    if (!user) throw redirect(failureRedirect)
+    return user
+}
+
+export async function redirectIfAuthenticated(
+    request: Request,
+    successRedirect = '/home'
+) {
+    const user = await getUser(request)
+    if (user) throw redirect(successRedirect)
+}
+
+export async function commitUserSession(
+    request: Request,
+    user: AuthAccount,
+    redirectTo: string
+) {
+    const session = await sessionStorage.getSession(
+        request.headers.get('Cookie')
+    )
+    session.set(USER_SESSION_KEY, user)
+    return redirect(redirectTo, {
+        headers: { 'Set-Cookie': await sessionStorage.commitSession(session) },
+    })
+}
 
 export { authenticator }

@@ -7,8 +7,8 @@ import type { Route } from './+types/home'
 
 export const meta: Route.MetaFunction = () => {
     return [
-        { title: 'remix-template | Home' },
-        { name: 'home', content: 'Home page for remix-template application' },
+        { title: 'react-router-template | Home' },
+        { name: 'home', content: 'Home page for react-router-template application' },
     ]
 }
 

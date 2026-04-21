@@ -60,7 +60,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 <Header />
                 <div className="container mx-auto md:px-0 px-2">
                     <Outlet />
-                    <Loading overlay={true} />
+                    {account && <Loading overlay={true} />}
                 </div>
             </main>
         </Providers>
